@@ -98,7 +98,7 @@
         init();
         initGeometry();
         render();
-        setupGui();
+        //setupGui();
         animate();
     }
 
@@ -120,13 +120,30 @@
             new THREE.PerspectiveCamera(
                 VIEW_ANGLE, ASPECT, NEAR, FAR
             );
-        camera.position.set(0, 0, 100);
+        camera.position.set(0, 0, 300);
         //camera.lookAt(new THREE.Vector3(10, 10, 10));
         //add the camera to scene
         scene.add(camera);
-        light = new THREE.PointLight(0xFFFFFF, 1.0);
+        light = new THREE.PointLight(0xFFFFFF, 0.8);
+        light.position.set(0,30,30);
         scene.add(light);
+        //var light2 = new THREE.DirectionalLight(0xFFFFFF);
+        //light2.position.set(15, 10, 5);
+        //var lightH = new THREE.DirectionalLightHelper(light2,10);
 
+        //var spotLight = new THREE.SpotLight(0xFFFFFF, 1.0);
+        //spotLight.position.set(0,200,0);
+        //spotLight.castShadow = true;
+        //spotLight.target
+        //var spotLightH = new THREE.SpotLightHelper(spotLight, 2);
+
+        var ambientLight = new THREE.AmbientLight(0x000044);
+        //scene.add(ambientLight);
+
+        //scene.add(spotLight);
+        //scene.add(spotLightH);
+        //scene.add(light2);
+        //scene.add(lightH);
         //add controls
         controls = new THREE.OrbitControls(camera, renderer.domElement);
         var axisHelper = new THREE.AxisHelper(5);
@@ -150,8 +167,8 @@
         );
 
         var myMaterial =
-            new THREE.MeshBasicMaterial({
-                color: 0xFF0000,
+            new THREE.MeshLambertMaterial({
+                color: 0xFFFFFF,
                 //side: THREE.DoubleSide
             });
 
@@ -167,6 +184,10 @@
         for (var j = 0; j< myFaces.length - 3; j+=3) {
             addFace(myFaces[j], myFaces[j+1], myFaces[j+2]);
         }
+
+        geometry.computeFaceNormals();
+        geometry.computeVertexNormals();
+
         //findPrime function to find xP, yP and zP
 
         var primeArray = findPrime();
@@ -175,6 +196,16 @@
         object = new THREE.Mesh(geometry, myMaterial);
         object.position.set(-primeArray[0], -primeArray[1], -primeArray[2]);
         scene.add(object);
+
+        var litCube = new THREE.Mesh(
+            new THREE.CubeGeometry(20,20,20),
+            new THREE.MeshLambertMaterial({color: 0xFFFFFF})
+        );
+        litCube.castShadow = true;
+        litCube.receiveShadow = true;
+        litCube.position.y = -30;
+        scene.add(litCube);
+
         function addVertex(x, y, z) {
             geometry.vertices.push( new THREE.Vector3( x, y, z) );
         }
@@ -194,9 +225,11 @@
 
     /** animate by looping with requestAnimationFrame */
     function animate() {
-        requestAnimationFrame(animate);
-        render();
         controls.update();
+        //update camera.lookAt
+        camera.lookAt(scene.position);
+        render();
+        window.requestAnimationFrame(animate, renderer.domElement);
     }
 
     /** setup simple gui */
