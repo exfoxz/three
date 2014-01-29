@@ -4,12 +4,12 @@
 (function(){
 
 //create global vars
-    var scene, camera, light, renderer, controls, container, guiController, object, geometry, myLines;
+    var scene, camera, light, renderer, controls, container, guiController, object, geometry, myLines, myFaces;
     scene = new THREE.Scene();
     myLines = [];
     myFaces = [];
 
-    NUM_OF_VERTICES = 2940; //make this dynamic (from text file)
+    var NUM_OF_VERTICES = 2940; //make this dynamic (from text file)
 
 //wait for window to load to actually start
 
@@ -80,7 +80,7 @@
                         counter++;
                     }
                 }
-                console.log(myFaces);
+                //console.log(myFaces);
                 //start rendering after getting the information
                 start();
             },
