@@ -109,8 +109,6 @@
         //setupGui();
         animate();
     }
-
-
     /** Initialize variables and scenes */
 
     function init() {
@@ -120,7 +118,8 @@
         var VIEW_ANGLE = 45,
             ASPECT = WIDTH/HEIGHT,
             NEAR = 0.1,
-            FAR = 1000;
+            FAR = 1000,
+            CAM_POS_Z = 100;
 
         renderer = new THREE.WebGLRenderer({antialias:true});
         renderer.setSize(WIDTH, HEIGHT);
@@ -131,7 +130,7 @@
             new THREE.PerspectiveCamera(
                 VIEW_ANGLE, ASPECT, NEAR, FAR
             );
-        camera.position.set(0, 0, 300);
+        camera.position.set(0, 0, CAM_POS_Z);
 
         //add the camera to scene
 
@@ -190,7 +189,6 @@
         //loop to add vertices
         for (var i = 0; i< myCoordinates.length; i+=6) {
             addVertex(myCoordinates[i], myCoordinates[i+1], myCoordinates[i+2])
-            //addVertex(myLines[i]-xPrime, myLines[i+1]-yPrime, myLines[i+2]-zPrime);
         }
 
         for (var j = 0; j< myFaces.length; j+=3) {
@@ -261,6 +259,8 @@
         })
         //renderer.domElement.appendChild(gui.domElement);
     }
+
+    /** find primes to position object to origin */
     function findPrime () {
         var xPrime = 0, yPrime = 0, zPrime = 0;
         for (var i = 0; i < myCoordinates.length - 6; i+=6) {
@@ -270,87 +270,4 @@
         }
         return [xPrime/numGeometry,yPrime/numGeometry,zPrime/numGeometry];
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    function init2() {
-        console.log("This is init");
-        scene = new THREE.Scene();
-        var WIDTH = window.innerWidth;
-        var HEIGHT = window.innerHeight;
-        var material = new THREE.MeshBasicMaterial({color: 0xFF0000, side: THREE.DoubleSide});
-        var geometry = new THREE.Geometry();
-
-        //add container to DOM Element
-        //container = document.getElementById('canvas');
-        //document.body.appendChild(container);
-
-        renderer = new THREE.WebGLRenderer({antialias:true});
-        renderer.setSize(WIDTH, HEIGHT);
-        renderer.gammaInput = true;
-        renderer.gammaOutput = true;
-        document.body.appendChild(renderer.domElement);
-        //container.appendChild(renderer.domElement);
-
-
-        camera = new THREE.PerspectiveCamera( 45, WIDTH/HEIGHT, 1, 500 );
-        camera.position.set( 23.166759, 3.030500, 39.191000 );
-        scene.add(camera);
-
-        //change aspect when the window is resized
-        window.addEventListener('resize', function () {
-            var WIDTH = window.innerWidth;
-            var HEIGHT = window.innerHeight;
-            renderer.setSize(WIDTH,HEIGHT);
-            camera.aspect.set(WIDTH/HEIGHT);
-            camera.updateProjectionMatrix();
-        });
-
-        //set background color of the scene.
-        renderer.setClearColor(0xFFFFFF,1);
-
-        //create a light, set its position, and add it to the scene
-        light = new THREE.PointLight(0xFFFFFF, 1.0);
-        scene.add(light);
-
-        //controller for DAT.GUI
-
-        //add vertices and faces
-        addVertex(23.166759, 3.030500, 39.191000);
-        addVertex(23.162279, 3.530500, 38.691000);
-        addVertex(23.048153, 3.530500, 39.191000);
-        addFace(0, 1, 2);
-
-        mesh = new THREE.Mesh( geometry, material);
-        scene.add(mesh);
-
-        //camera.lookAt( mesh );
-        //var newQuaternion = new THREE.Quaternion();
-
-        // Add OrbitControls so that we can pan around with the mouse.
-        controls = new THREE.OrbitControls(camera, renderer.domElement);
-
-        function addVertex(x, y, z) {
-            geometry.vertices.push( new THREE.Vector3( x, y, z) );
-        }
-
-        function addFace(x, y, z) {
-            geometry.faces.push( new THREE.Face3(x, y, z));
-        }
-        // Renders the scene and updates the render as needed.
-
-    }
-
 })();
