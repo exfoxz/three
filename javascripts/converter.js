@@ -131,6 +131,7 @@
     /** Initialize variables and scenes */
 
     function init() {
+
         var WIDTH = window.innerWidth,
             HEIGHT = window.innerHeight;
         var VIEW_ANGLE = 45,
@@ -140,18 +141,23 @@
 
         renderer = new THREE.WebGLRenderer({antialias:true});
         renderer.setSize(WIDTH, HEIGHT);
+
         document.body.appendChild(renderer.domElement);
+
         camera =
             new THREE.PerspectiveCamera(
                 VIEW_ANGLE, ASPECT, NEAR, FAR
             );
         camera.position.set(0, 0, 300);
-        //camera.lookAt(new THREE.Vector3(10, 10, 10));
+
         //add the camera to scene
-        scene.add(camera);
+
+        scene.add(camera)
+
         light = new THREE.PointLight(0xFFFFFF, 0.8);
         light.position.set(0,30,30);
         scene.add(light);
+
         //var light2 = new THREE.DirectionalLight(0xFFFFFF);
         //light2.position.set(15, 10, 5);
         //var lightH = new THREE.DirectionalLightHelper(light2,10);
@@ -162,17 +168,16 @@
         //spotLight.target
         //var spotLightH = new THREE.SpotLightHelper(spotLight, 2);
 
-        var ambientLight = new THREE.AmbientLight(0x000044);
-        //scene.add(ambientLight);
-
         //scene.add(spotLight);
         //scene.add(spotLightH);
         //scene.add(light2);
         //scene.add(lightH);
         //add controls
+
         controls = new THREE.OrbitControls(camera, renderer.domElement);
         var axisHelper = new THREE.AxisHelper(5);
         scene.add(axisHelper);
+
         //var size = 10;
         //var step = 1;
         //var gridHelper = new THREE.GridHelper( size, step );
@@ -200,13 +205,12 @@
         geometry = new THREE.Geometry();
 
         //loop to add vertices
-
-        for (var i = 0; i<myCoordinates.length - 6; i+=6) {
+        for (var i = 0; i< myCoordinates.length; i+=6) {
             addVertex(myCoordinates[i], myCoordinates[i+1], myCoordinates[i+2])
             //addVertex(myLines[i]-xPrime, myLines[i+1]-yPrime, myLines[i+2]-zPrime);
         }
 
-        for (var j = 0; j< myFaces.length - 3; j+=3) {
+        for (var j = 0; j< myFaces.length; j+=3) {
             addFace(myFaces[j], myFaces[j+1], myFaces[j+2]);
         }
 
