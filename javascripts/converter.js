@@ -80,7 +80,7 @@
                         counter++;
                     }
                 }
-                console.log("my FACE is: " + myFaces[8]);
+                console.log(myFaces);
                 //start rendering after getting the information
                 start();
             },
