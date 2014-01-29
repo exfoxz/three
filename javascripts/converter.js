@@ -38,13 +38,14 @@
                 //console.log(words[0][1]);
                 //console.log(words.length + " length");
                 var counter = 0;
+                console.log(words);
                 for (var j = 0; j < words.length; j++) {
-                    for(var k = 0; k < words[0].length; k++) {
+                     for(var k = 0; k < words[0].length; k++) {
                         myLines[counter] = parseFloat(words[j][k]);
                         counter++;
                     }
                 }
-                //console.log(myLines[8]);
+                console.log(myLines);
                 //start rendering after getting the information
                 getFace();
             },
@@ -176,18 +177,22 @@
 
         //loop to add vertices
 
-        for (var i = 0; i<myLines.length - 6; i+=6) {
+        for (var i = 0; i<myLines.length; i+=6) {
             addVertex(myLines[i], myLines[i+1], myLines[i+2])
             //addVertex(myLines[i]-xPrime, myLines[i+1]-yPrime, myLines[i+2]-zPrime);
+            //console.log(i);
+            //console.log(myLines.length);
         }
 
-        for (var j = 0; j< myFaces.length - 3; j+=3) {
+        for (var j = 0; j< myFaces.length; j+=3) {
             addFace(myFaces[j], myFaces[j+1], myFaces[j+2]);
+            //console.log(j);
+            //console.log(myFaces.length);
         }
 
         geometry.computeFaceNormals();
         geometry.computeVertexNormals();
-
+        //console.log(geometry);
         //findPrime function to find xP, yP and zP
 
         var primeArray = findPrime();
