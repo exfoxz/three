@@ -59,27 +59,11 @@
                         counter++;
                     }
                 }
-
-                //start getFace() after done
-                getFace();
-            },
-            error:   function(e) {
-                // An error occurred
-                console.log(e);
-            }
-        });
-    }
-
-    function getFace(){
-        $.ajax({
-            type:    "GET",
-            url:     "/three/data/1bzx.SURF",
-            success: function(text) {
                 ////START LOOKING FOR FACES - TOPOLOGY
 
                 //get the TOPOLOGY position
                 var startTopology = 0;
-                for(var j = numGeometry - 1 + startGeometry; j < numGeometry - 1 + startGeometry + RANGE; j++) {
+                for(j = numGeometry - 1 + startGeometry; j < numGeometry - 1 + startGeometry + RANGE; j++) {
                     if(lines[j].charAt(0) == "T") {
                         console.log("THIS IS TOPOLOGY: " + j);
                         startTopology = j;
@@ -89,13 +73,13 @@
 
                 //get number of topologies
                 numTopology = parseInt(lines[startTopology].replace("TOPOLOGY: ", ""));
-                var words = [];
-                for (var i = 0; i < numTopology; i++) {
+                words = [];
+                for (i = 0; i < numTopology; i++) {
                     words[i] = lines[i+ startTopology + 1].split(" ");
                 }
 
                 //reset counter
-                var counter = 0;
+                counter = 0;
 
                 //loop through words[] to add parsed-Floats to myCoordinates[]
                 for (j = 0; j < words.length; j++) {
@@ -116,7 +100,6 @@
             }
         });
     }
-
     /** start function */
 
     function start() {
