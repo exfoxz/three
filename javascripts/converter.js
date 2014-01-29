@@ -4,12 +4,14 @@
 (function(){
 
 //create global vars
-    var scene, camera, light, renderer, controls, container, guiController, object, geometry, myLines, myFaces;
+    var scene, camera, light, renderer, controls, container, guiController, object, geometry;
     scene = new THREE.Scene();
-    myLines = [];
-    myFaces = [];
+    var myCoordinates = [], myFaces = [], lines;
+    var numGeometry = 0, numTopology = 0;
+    var startGeometry = 0, startTopology = 0;
 
-    var NUM_OF_VERTICES = 2940; //make this dynamic (from text file)
+    //range of looking for GEOMETRY and TOPOLOGY
+    var RANGE = 30;
 
 //wait for window to load to actually start
 
@@ -18,34 +20,47 @@
     }
 
     /** GET server's triangles data file and store it */
-
     function getData() {
         $.ajax({
             type:    "GET",
-            url:     "/three/data/coordinates.SURF",
+            url:     "/three/data/1bzx.SURF",
             success: function(text) {
                 // `text` is the file text
-
                 //split file into different lines
-                var lines = text.split("\n");
+                lines = text.split("\n");
+
+                //get the GEOMETRY position
+                for(var i = 0; i < RANGE; i++) {
+                    if(lines[i].charAt(0) == "G") {
+                        console.log("THIS IS IT: " + i);
+                        startGeometry = i;
+                        break;
+                    }
+                }
+
+                //get number of geometries
+                numGeometry = parseInt(lines[startGeometry].replace("GEOMETRY: ", ""))
 
                 //split each line into different words separated by a space " "
                 //words will be contained in an object - words
+                //loop through lines[] to break down lines into words[]
                 var words = [];
-                for (var i = 0; i < lines.length; i++) {
-                    words[i] = lines[i].split(" ");
+                for (i = 0; i < numGeometry; i++) {
+                    words[i] = lines[i+startGeometry + 1].split(" ");
                 }
-                //console.log(words[0][1]);
-                //console.log(words.length + " length");
+
+                //a counter to loop through words[]
                 var counter = 0;
+
+                //loop through words[] to add parsed-Floats to myCoordinates[]
                 for (var j = 0; j < words.length; j++) {
                     for(var k = 0; k < words[0].length; k++) {
-                        myLines[counter] = parseFloat(words[j][k]);
+                        myCoordinates[counter] = parseFloat(words[j][k]);
                         counter++;
                     }
                 }
-                //console.log(myLines[8]);
-                //start rendering after getting the information
+
+                //start getFace() after done
                 getFace();
             },
             error:   function(e) {
@@ -58,29 +73,40 @@
     function getFace(){
         $.ajax({
             type:    "GET",
-            url:     "/three/data/faces.surf",
+            url:     "/three/data/1bzx.SURF",
             success: function(text) {
-                // `text` is the file text
+                ////START LOOKING FOR FACES - TOPOLOGY
 
-                //split file into different lines
-                var lines = text.split("\n");
-
-                //split each line into different words separated by a space " "
-                //words will be contained in an object - words
-                var words = [];
-                for (var i = 0; i < lines.length; i++) {
-                    words[i] = lines[i].split(" ");
+                //get the TOPOLOGY position
+                var startTopology = 0;
+                for(var j = numGeometry - 1 + startGeometry; j < numGeometry - 1 + startGeometry + RANGE; j++) {
+                    if(lines[j].charAt(0) == "T") {
+                        console.log("THIS IS TOPOLOGY: " + j);
+                        startTopology = j;
+                        break;
+                    }
                 }
-                //console.log(words[0][1]);
-                //console.log(words.length + " length");
+
+                //get number of topologies
+                numTopology = parseInt(lines[startTopology].replace("TOPOLOGY: ", ""));
+                var words = [];
+                for (var i = 0; i < numTopology; i++) {
+                    words[i] = lines[i+ startTopology + 1].split(" ");
+                }
+
+                //reset counter
                 var counter = 0;
-                for (var j = 0; j < words.length; j++) {
-                    for(var k = 0; k < words[0].length; k++) {
+
+                //loop through words[] to add parsed-Floats to myCoordinates[]
+                for (j = 0; j < words.length; j++) {
+                    for(k = 0; k < words[0].length; k++) {
                         myFaces[counter] = parseFloat(words[j][k]);
                         counter++;
                     }
                 }
-                //console.log(myFaces);
+                console.log("BEFORE START");
+                console.log(myFaces);
+                console.log(myCoordinates);
                 //start rendering after getting the information
                 start();
             },
@@ -90,7 +116,6 @@
             }
         });
     }
-
 
     /** start function */
 
@@ -176,8 +201,8 @@
 
         //loop to add vertices
 
-        for (var i = 0; i<myLines.length - 6; i+=6) {
-            addVertex(myLines[i], myLines[i+1], myLines[i+2])
+        for (var i = 0; i<myCoordinates.length - 6; i+=6) {
+            addVertex(myCoordinates[i], myCoordinates[i+1], myCoordinates[i+2])
             //addVertex(myLines[i]-xPrime, myLines[i+1]-yPrime, myLines[i+2]-zPrime);
         }
 
@@ -251,12 +276,12 @@
     }
     function findPrime () {
         var xPrime = 0, yPrime = 0, zPrime = 0;
-        for (var i = 0; i < myLines.length - 6; i+=6) {
-            xPrime += myLines[i];
-            yPrime += myLines[i+1];
-            zPrime += myLines[i+2];
+        for (var i = 0; i < myCoordinates.length - 6; i+=6) {
+            xPrime += myCoordinates[i];
+            yPrime += myCoordinates[i+1];
+            zPrime += myCoordinates[i+2];
         }
-        return [xPrime/NUM_OF_VERTICES,yPrime/NUM_OF_VERTICES,zPrime/NUM_OF_VERTICES];
+        return [xPrime/numGeometry,yPrime/numGeometry,zPrime/numGeometry];
     }
 
 
