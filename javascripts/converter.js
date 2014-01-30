@@ -23,7 +23,7 @@
     function getData() {
         $.ajax({
             type:    "GET",
-            url:     "/three/data/1bzx.SURF",
+            url:     "/three/data/1a0j.SURF",
             success: function(text) {
                 // `text` is the file text
                 //split file into different lines
@@ -32,7 +32,7 @@
                 //get the GEOMETRY position
                 for(var i = 0; i < RANGE; i++) {
                     if(lines[i].charAt(0) == "G") {
-                        console.log("THIS IS IT: " + i);
+                        //console.log("THIS IS IT: " + i);
                         startGeometry = i;
                         break;
                     }
@@ -65,7 +65,7 @@
                 var startTopology = 0;
                 for(j = numGeometry - 1 + startGeometry; j < numGeometry - 1 + startGeometry + RANGE; j++) {
                     if(lines[j].charAt(0) == "T") {
-                        console.log("THIS IS TOPOLOGY: " + j);
+                        //console.log("THIS IS TOPOLOGY: " + j);
                         startTopology = j;
                         break;
                     }
@@ -89,8 +89,8 @@
                     }
                 }
                 console.log("BEFORE START");
-                console.log(myFaces);
-                console.log(myCoordinates);
+                console.log("Num of GEOMETRY: " + numGeometry);
+                console.log("Num of TOPOLOGY: " + numTopology);
                 //start rendering after getting the information
                 start();
             },
@@ -178,9 +178,10 @@
             new THREE.SphereGeometry(radius, segments, rings), myMaterial
         );
 
+        var myMaterialColor = 0xFF0000;
         var myMaterial =
             new THREE.MeshLambertMaterial({
-                color: 0xFFFFFF,
+                color: myMaterialColor,
                 //side: THREE.DoubleSide
             });
 
