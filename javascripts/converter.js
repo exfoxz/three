@@ -6,9 +6,9 @@
 //create global vars
     var scene, camera, light, renderer, controls, container, guiController, object, geometry;
     scene = new THREE.Scene();
-    var myCoordinates = [], myFaces = [], lines;
-    var numGeometry = 0, numTopology = 0;
-    var startGeometry = 0, startTopology = 0;
+    //var myCoordinates = [], myFaces = [], lines;
+    //var numGeometry = 0, numTopology = 0;
+    //var startGeometry = 0, startTopology = 0;
 
     //range of looking for GEOMETRY and TOPOLOGY
     var RANGE = 30;
@@ -16,23 +16,25 @@
 //wait for window to load to actually start
 
     window.onload = function () {
-        getData();
+        var dataObject = getData('1a0j.SURF');
+        start();
     }
 
     /** GET server's triangles data file and store it */
-    function getData() {
+    function getData(fileName) {
+        var myCoordinates = [], myFaces = [], lines;
+        var numGeometry = 0, numTopology = 0;
+        var startGeometry = 0, startTopology = 0;
         $.ajax({
             type:    "GET",
-            url:     "/three/data/1a0j.SURF",
+            url:     "/three/data/" + fileName,
             success: function(text) {
-                // `text` is the file text
                 //split file into different lines
                 lines = text.split("\n");
 
                 //get the GEOMETRY position
                 for(var i = 0; i < RANGE; i++) {
                     if(lines[i].charAt(0) == "G") {
-                        //console.log("THIS IS IT: " + i);
                         startGeometry = i;
                         break;
                     }
@@ -65,7 +67,6 @@
                 var startTopology = 0;
                 for(j = numGeometry - 1 + startGeometry; j < numGeometry - 1 + startGeometry + RANGE; j++) {
                     if(lines[j].charAt(0) == "T") {
-                        //console.log("THIS IS TOPOLOGY: " + j);
                         startTopology = j;
                         break;
                     }
@@ -88,11 +89,19 @@
                         counter++;
                     }
                 }
-                console.log("BEFORE START");
-                console.log("Num of GEOMETRY: " + numGeometry);
-                console.log("Num of TOPOLOGY: " + numTopology);
+
                 //start rendering after getting the information
-                start();
+
+                var dataObject = {
+                    coordinates: myCoordinates,
+                    faces: myFaces,
+                    numGeometry: numGeometry,
+                    numTopology: numTopology,
+                    startGeometry: startGeometry,
+                    startTopology: startTopology
+                }
+                return dataObject;
+                //start();
             },
             error:   function(e) {
                 // An error occurred
@@ -119,7 +128,7 @@
             ASPECT = WIDTH/HEIGHT,
             NEAR = 0.1,
             FAR = 1000,
-            CAM_POS_Z = 100;
+            CAM_POS_Z = 35;
 
         renderer = new THREE.WebGLRenderer({antialias:true});
         renderer.setSize(WIDTH, HEIGHT);
@@ -157,13 +166,16 @@
         //add controls
 
         controls = new THREE.OrbitControls(camera, renderer.domElement);
-        var axisHelper = new THREE.AxisHelper(5);
-        scene.add(axisHelper);
+        //var axisHelper = new THREE.AxisHelper(5);
+        //scene.add(axisHelper);
 
         //var size = 10;
         //var step = 1;
         //var gridHelper = new THREE.GridHelper( size, step );
         //scene.add( gridHelper );
+        var myObject = {};
+        myObject.coordinates = myCoordinates;
+        console.log(myObject.coordinates[2]);
     }
 
     /** Initialize geometry from server data */
@@ -208,6 +220,7 @@
         object.position.set(-primeArray[0], -primeArray[1], -primeArray[2]);
         scene.add(object);
 
+        /*)
         var litCube = new THREE.Mesh(
             new THREE.CubeGeometry(20,20,20),
             new THREE.MeshLambertMaterial({color: 0xFFFFFF})
@@ -216,7 +229,7 @@
         litCube.receiveShadow = true;
         litCube.position.y = -30;
         scene.add(litCube);
-
+        */
         function addVertex(x, y, z) {
             geometry.vertices.push( new THREE.Vector3( x, y, z) );
         }
@@ -227,7 +240,9 @@
     }
 
     /** render from geometry information */
-
+    function addObject() {
+        
+    }
     function render() {
         light.position.copy ( camera.position );
         //camera.updateProjectionMatrix();
