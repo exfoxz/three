@@ -1,7 +1,6 @@
 /**
  * Created by ExFoxZ on 1/20/14.
  */
-(function(){
 
 //create global vars
     var scene, camera, light, renderer, controls, container, guiController, object, geometry;
@@ -16,12 +15,13 @@
 //wait for window to load to actually start
 
     window.onload = function () {
-        var dataObject = getData('1a0j.SURF');
+        //var dataObject = getData('1a0j.SURF');
         start();
+        adder('1a0j.SURF', 0xFF0000);
     }
 
-    /** GET server's triangles data file and store it */
-    function getData(fileName) {
+    /** GET server's triangles data file and store it and add it to scene*/
+    function adder(fileName, color) {
         var myCoordinates = [], myFaces = [], lines;
         var numGeometry = 0, numTopology = 0;
         var startGeometry = 0, startTopology = 0;
@@ -29,6 +29,7 @@
             type:    "GET",
             url:     "/three/data/" + fileName,
             success: function(text) {
+                console.log('DONE CALLING');
                 //split file into different lines
                 lines = text.split("\n");
 
@@ -100,7 +101,8 @@
                     startGeometry: startGeometry,
                     startTopology: startTopology
                 }
-                return dataObject;
+                //return dataObject;
+                addObject(dataObject, color);
                 //start();
             },
             error:   function(e) {
@@ -113,7 +115,7 @@
 
     function start() {
         init();
-        initGeometry();
+        //initGeometry();
         render();
         //setupGui();
         animate();
@@ -173,9 +175,9 @@
         //var step = 1;
         //var gridHelper = new THREE.GridHelper( size, step );
         //scene.add( gridHelper );
-        var myObject = {};
-        myObject.coordinates = myCoordinates;
-        console.log(myObject.coordinates[2]);
+        //var myObject = {};
+        //myObject.coordinates = myCoordinates;
+       // console.log(myObject.coordinates[2]);
     }
 
     /** Initialize geometry from server data */
@@ -190,13 +192,15 @@
             new THREE.SphereGeometry(radius, segments, rings), myMaterial
         );
 
+        /*
         var myMaterialColor = 0xFF0000;
         var myMaterial =
             new THREE.MeshLambertMaterial({
                 color: myMaterialColor,
                 //side: THREE.DoubleSide
             });
-
+            */
+        /*
         geometry = new THREE.Geometry();
 
         //loop to add vertices
@@ -219,8 +223,8 @@
         object = new THREE.Mesh(geometry, myMaterial);
         object.position.set(-primeArray[0], -primeArray[1], -primeArray[2]);
         scene.add(object);
-
-        /*)
+        */
+        /*
         var litCube = new THREE.Mesh(
             new THREE.CubeGeometry(20,20,20),
             new THREE.MeshLambertMaterial({color: 0xFFFFFF})
@@ -230,6 +234,35 @@
         litCube.position.y = -30;
         scene.add(litCube);
         */
+
+    }
+
+    /** Add new object to the scene */
+    function addObject(dataObject, color) {
+        geometry = new THREE.Geometry();
+        var myCoordinates = dataObject.coordinates;
+        var myFaces = dataObject.faces;
+        //loop to add vertices
+        for (var i = 0; i< myCoordinates.length; i+=6) {
+            addVertex(myCoordinates[i], myCoordinates[i+1], myCoordinates[i+2])
+        }
+
+        for (var j = 0; j< myFaces.length; j+=3) {
+            addFace(myFaces[j], myFaces[j+1], myFaces[j+2]);
+        }
+
+        geometry.computeFaceNormals();
+        geometry.computeVertexNormals();
+
+        //findPrime function to find xP, yP and zP
+
+        var primeArray = findPrime(myCoordinates, dataObject.numGeometry);
+
+        //create a new object containing geometry
+        object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({color: color}));
+        object.position.set(-primeArray[0], -primeArray[1], -primeArray[2]);
+        scene.add(object);
+
         function addVertex(x, y, z) {
             geometry.vertices.push( new THREE.Vector3( x, y, z) );
         }
@@ -237,12 +270,10 @@
         function addFace(x, y, z) {
             geometry.faces.push( new THREE.Face3( x, y, z));
         }
+
     }
 
     /** render from geometry information */
-    function addObject() {
-        
-    }
     function render() {
         light.position.copy ( camera.position );
         //camera.updateProjectionMatrix();
@@ -277,7 +308,7 @@
     }
 
     /** find primes to position object to origin */
-    function findPrime () {
+    function findPrime (myCoordinates, numGeometry) {
         var xPrime = 0, yPrime = 0, zPrime = 0;
         for (var i = 0; i < myCoordinates.length - 6; i+=6) {
             xPrime += myCoordinates[i];
@@ -286,4 +317,3 @@
         }
         return [xPrime/numGeometry,yPrime/numGeometry,zPrime/numGeometry];
     }
-})();
