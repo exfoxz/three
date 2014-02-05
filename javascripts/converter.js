@@ -15,7 +15,8 @@
 //wait for window to load to actually start
     //addEventListener('click',)
     $(document).ready(function() {
-        $("#add").bind('click', function() {
+        $("#add").on('click', function(e) {
+            //e.preventDefault();
             try {
                 adder($('.inName').val(), $('.inColor').val());
                 console.log($('.inColor').val());
@@ -55,8 +56,8 @@ window.onload = function () {
 
         renderer = new THREE.WebGLRenderer({antialias:true});
         renderer.setSize(WIDTH, HEIGHT);
-
-        document.body.appendChild(renderer.domElement);
+        document.getElementById('scene').appendChild(renderer.domElement);
+        //document.body.appendChild(renderer.domElement);
 
         camera =
             new THREE.PerspectiveCamera(
