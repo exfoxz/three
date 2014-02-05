@@ -11,15 +11,34 @@
 
     //range of looking for GEOMETRY and TOPOLOGY
     var RANGE = 30;
+    var objectCount = 2;
+    
+function response (event) {
+    var target = event.target;
+    if (target.checked) {
+        scene.children[target.parentElement.id].visible = true;
+    } else {
+        scene.children[target.parentElement.id].visible = false;
+    }
+    //console.log(event.target.parentElement.id);
+}
 
 //wait for window to load to actually start
     //addEventListener('click',)
     $(document).ready(function() {
-        $("#add").on('click', function(e) {
-            //e.preventDefault();
+
+        $("form").on('submit', function(e) {
+            objectCount++;
+            e.preventDefault();
             try {
-                adder($('.inName').val(), $('.inColor').val());
+                var name = $('.inName').val();
+                var color = $('.inColor').val();
+                var object = adder(name, color);
+                var input = '<li id="' + objectCount + '">Object: <em>' + name + '</em>, color: ' + color +
+                                  ', visible: <input type="checkbox" checked onclick="response(event)"></li>';
+                $('.list').append(input);
                 console.log($('.inColor').val());
+                this.reset();
                 //console.log("SDSD");
                 //console.log(0x00FF00);
             }
@@ -170,7 +189,8 @@ window.onload = function () {
                 startTopology: startTopology
             }
             //add object to scene;
-            addObject(dataObject, color);
+            var object = addObject(dataObject, color);
+            return object;
         },
         error:   function(e) {
             // An error occurred
@@ -204,7 +224,7 @@ window.onload = function () {
             object = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({color: color}));
             object.position.set(-primeArray[0], -primeArray[1], -primeArray[2]);
             scene.add(object);
-
+            return object;
             function addVertex(x, y, z) {
                 geometry.vertices.push( new THREE.Vector3( x, y, z) );
             }

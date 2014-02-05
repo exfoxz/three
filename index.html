@@ -27,9 +27,21 @@
     </div>
 
     <div id="sidebar">
-        <input class="inName" type="text" placeholder="File">
-        <input class="inColor" type="text" placeholder="Color">
-        <input class="button" id="add" type="button" value="Render!">
+        <form>
+            <p><label for='object'> Add a new object</label></p>
+
+            <input class="inName" type="text" placeholder="File">
+            <input class="inColor" type="color" placeholder="Color">
+            <input type='SUBMIT' value='render!'>
+        </form>
+
+        <ul class='list'>
+            <li id="2">
+            <em>Object 1</em>, color: red, visible:
+            <input type="checkbox" checked onclick="response(event)">
+            </li>
+        
+        </ul>
     </div>
 
   </body>
